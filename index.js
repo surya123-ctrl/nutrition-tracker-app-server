@@ -76,7 +76,7 @@ app.post('/login', async (req, res) => {
     }
 })
 
-app.get('/food', isAuthenticated, async (req, res) => {
+app.get('/foods', isAuthenticated, async (req, res) => {
     try {
         const food = await foodModel.find();
         res.status(200).send(food);
@@ -86,7 +86,17 @@ app.get('/food', isAuthenticated, async (req, res) => {
     }
 })
 
-
+// search food by name
+app.get('/foods/:name', async (req, res) => {
+    try {
+        const food = await foodModel.find({ name: { $regex: req.params.name, $options: 'i' } });
+        if (food.length) res.status(200).send(food);
+        else res.status(404).send({ message: "Unable to find food" });
+    }
+    catch (error) {
+        res.status(500).send({ message: "Unable to find food" });
+    }
+})
 
 app.listen(3000, () => {
     console.log("Server is running on port 3000")

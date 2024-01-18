@@ -7,5 +7,5 @@ const foodSchema = mongoose.Schema({
     fat: { type: Number, required: false },
     fibre: { type: Number, required: false }
 }, { timestamps: true });
-const foodModel = mongoose.model("food", foodSchema);
+const foodModel = mongoose.model("foods", foodSchema);
 module.exports = foodModel;

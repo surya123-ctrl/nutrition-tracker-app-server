@@ -41,6 +41,41 @@ app.post('/register', (req, res) => {
 
 })
 
+app.post('/login', async (req, res) => {
+    const email = req.body.email;
+    const password = req.body.password;
+    try {
+        const user = await userModel.findOne({ email: email })
+        if (user) {
+            bcrypt.compare(password, user.password, (err, result) => {
+                if (result) {
+                    jwt.sign({ email: email }, "jwt-secret-key", (err, token) => {
+                        if (!err) {
+                            console.log("token", token);
+                            res.status(200).send({ token: token });
+                        }
+                        else {
+                            console.log("Error in generating Token");
+                            res.status(500).send({ message: "Error in generating Token" })
+                        }
+                    })
+                }
+                else {
+                    res.status(403).send({ message: "Invalid Password" });
+                }
+            })
+        }
+        else {
+            res.status(403).send({ message: "Invalid Email" });
+        }
+    }
+    catch (error) {
+        res.status(500).send({ message: "Error in Logging In", error });
+    }
+
+
+})
+
 app.listen(3000, () => {
     console.log("Server is running on port 3000")
 })

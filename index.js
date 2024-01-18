@@ -6,6 +6,7 @@ const uri = 'mongodb+srv://suryatomar303:Nutri123@cluster0.4svgirh.mongodb.net/?
 // Importing models
 const userModel = require('./models/userModel');
 const foodModel = require('./models/foodModel');
+const trackingModel = require('./models/trackingModel');
 const isAuthenticated = require('./isAuthenticated');
 mongoose.connect(uri, {
     useNewUrlParser: true,
@@ -87,7 +88,7 @@ app.get('/foods', isAuthenticated, async (req, res) => {
 })
 
 // search food by name
-app.get('/foods/:name', async (req, res) => {
+app.get('/foods/:name', isAuthenticated, async (req, res) => {
     try {
         const food = await foodModel.find({ name: { $regex: req.params.name, $options: 'i' } });
         if (food.length) res.status(200).send(food);
@@ -98,6 +99,34 @@ app.get('/foods/:name', async (req, res) => {
     }
 })
 
+app.post('/track', isAuthenticated, async (req, res) => {
+    const trackData = req.body;
+    try {
+        const data = await trackingModel.create(trackData);
+        res.send(201).send({ message: "Food added successfully" });
+    }
+    catch (error) {
+        console.log("ERROR IN ADDING FOOD TO TRACKING DATABASE");
+        res.status(500).send({ message: "Server Error! Can't add this item right now." });
+    }
+
+})
+
+app.get('/track/:userId/:date', isAuthenticated, async (req, res) => {
+    const userId = req.params.userId;
+    const date = new Date(req.params.date).toLocaleDateString();
+    console.log(date);
+    try {
+        const foods = await trackingModel.find({ userId: userId, eatenDate: date }).populate('userId').populate('foodId');
+        res.status(200).json(foods);
+    }
+    catch (error) {
+        console.log('ERROR GETTING USER\'S FOODS FROM THE DATABASE \nUSER ID: ', userId, '\nERROR: ', error);
+        res.status(500).send({ message: "ERROR GETTING USER'S FOODS FROM THE DATABASE " })
+    }
+})
 app.listen(3000, () => {
     console.log("Server is running on port 3000")
 })
+//Tracking collection
+// __id, user_id, food_id, date, quantity

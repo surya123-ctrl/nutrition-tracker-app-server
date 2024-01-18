@@ -6,5 +6,5 @@ const userSchema = mongoose.Schema({
     age: { type: Number, required: true, min: 12 }
 }, { timestamps: true })
 
-const userModel = mongoose.model("usersss", userSchema);
+const userModel = mongoose.model("users", userSchema);
 module.exports = userModel;

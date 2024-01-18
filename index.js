@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 const uri = 'mongodb+srv://suryatomar303:Nutri123@cluster0.4svgirh.mongodb.net/?retryWrites=true&w=majority';
 // Importing models
 const userModel = require('./models/userModel');
+const foodModel = require('./models/foodModel');
+const isAuthenticated = require('./isAuthenticated');
 mongoose.connect(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -72,9 +74,19 @@ app.post('/login', async (req, res) => {
     catch (error) {
         res.status(500).send({ message: "Error in Logging In", error });
     }
-
-
 })
+
+app.get('/food', isAuthenticated, async (req, res) => {
+    try {
+        const food = await foodModel.find();
+        res.status(200).send(food);
+    }
+    catch (error) {
+        res.status(500).send({ message: "Error in getting Food Data", error });
+    }
+})
+
+
 
 app.listen(3000, () => {
     console.log("Server is running on port 3000")

@@ -1,15 +1,18 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const env = require('dotenv');
+env.config();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
-const uri = 'mongodb+srv://suryatomar303:Nutri123@cluster0.4svgirh.mongodb.net/?retryWrites=true&w=majority';
+const URI = process.env.MONGODB_URI;
+const PORT = process.env.PORT || 8000;
 // Importing models
 const userModel = require('./models/userModel');
 const foodModel = require('./models/foodModel');
 const trackingModel = require('./models/trackingModel');
 const isAuthenticated = require('./isAuthenticated');
-mongoose.connect(uri, {
+mongoose.connect(URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
